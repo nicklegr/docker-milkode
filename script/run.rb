@@ -1,13 +1,23 @@
 require 'json'
 require 'open-uri'
 
-data = JSON.parse(
-  open('https://api.github.com/users/nicklegr/repos').read
-  )
+# @todo multiple users
+# @todo manually add repos by setting.yaml
 
-data.each do |e|
-  clone_url = e['clone_url']
-  system("milk add #{clone_url}")  
+def github_urls
+  github_user = ENV['GITHUB_USER'] || 'ongaeshi'
+
+  data = JSON.parse(
+    open("https://api.github.com/users/#{github_user}/repos").read
+    )
+
+  data.map do |e|
+    e['clone_url']
+  end
+end
+
+github_urls.each do |e|
+  system("milk add #{e}")
 end
 
 system("milk web --host=0.0.0.0 --no-browser")
